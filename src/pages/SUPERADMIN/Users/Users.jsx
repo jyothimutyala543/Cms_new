@@ -13,6 +13,7 @@ import {
 import {
   onlyIndianMobileValue,
   validateMobile,
+  validateEmailCom,
 } from "../../../utils/validation";
 import { formatTitleCase } from "../../../utils/format";
 
@@ -111,6 +112,13 @@ function Users() {
     const mobileError = form.mobileNumber
       ? validateMobile(form.mobileNumber, "Mobile number")
       : "";
+
+    const emailError = validateEmailCom(form.email, "Email");
+
+    if (emailError) {
+      setError(emailError);
+      return;
+    }
 
     if (phoneError || mobileError) {
       setError(phoneError || mobileError);
@@ -222,7 +230,7 @@ function Users() {
     <>
       <Header
         title="User Management"
-        subtitle="Search, filter, view, activate, and deactivate users."
+        subtitle={`${rows.length} ${rows.length === 1 ? "User" : "Users"} Found`}
         action={
           <button className="sa-btn sa-btn-primary" onClick={openCreateForm}>
             <Plus size={16} />
@@ -346,7 +354,7 @@ function Users() {
         <div className="sa-form-card" style={{ marginTop: 16 }}>
           <Header
             title="User Details"
-            subtitle={selectedUser.id}
+            subtitle={selectedUser.id ? `User ID: ${selectedUser.id}` : ""}
             action={<button className="sa-btn" onClick={() => setSelectedUser(null)}>Close</button>}
           />
           <div className="sa-form-grid">
@@ -365,7 +373,7 @@ function Users() {
             ].map((key) => (
               <div className="sa-form-field" key={key}>
                 <label>{key.replace(/^\w/, (letter) => letter.toUpperCase())}</label>
-                <input value={key === "name" ? formatTitleCase(selectedUser[key]) : selectedUser[key] || ""} readOnly />
+                <input value={selectedUser[key] || ""} readOnly />
               </div>
             ))}
           </div>
