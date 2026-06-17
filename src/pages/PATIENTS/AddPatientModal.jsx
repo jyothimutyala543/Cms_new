@@ -143,12 +143,15 @@ function AddPatientModal({ onClose, onAdd }) {
               <label>Phone</label>
               <input
                 name="phone"
+                type="tel"
                 value={form.phone}
                 onChange={handleChange}
                 inputMode="numeric"
+                pattern="^(?!([0-9])\1{9})[6-9][0-9]{9}$"
                 maxLength={10}
+                placeholder="10-digit Indian mobile number"
+                title="Enter a 10-digit Indian mobile number starting with 6-9 and not all identical digits"
                 className={fieldErrors.phone ? "is-invalid" : ""}
-                placeholder="9876543210"
               />
               {fieldErrors.phone ? <span className="add-patient-field-error">{fieldErrors.phone}</span> : null}
             </div>
@@ -197,12 +200,15 @@ function AddPatientModal({ onClose, onAdd }) {
               <label>Emergency Contact Number</label>
               <input
                 name="emergencyContactPhone"
+                type="tel"
                 value={form.emergencyContactPhone}
                 onChange={handleChange}
                 inputMode="numeric"
+                pattern="^(?!([0-9])\1{9})[6-9][0-9]{9}$"
                 maxLength={10}
+                placeholder="10-digit Indian mobile number"
+                title="Enter a 10-digit Indian mobile number starting with 6-9 and not all identical digits"
                 className={fieldErrors.emergencyContactPhone ? "is-invalid" : ""}
-                placeholder="9876543210"
               />
               {fieldErrors.emergencyContactPhone ? <span className="add-patient-field-error">{fieldErrors.emergencyContactPhone}</span> : null}
             </div>

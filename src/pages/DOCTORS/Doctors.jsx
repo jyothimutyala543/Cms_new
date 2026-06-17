@@ -387,10 +387,10 @@ function Doctors() {
     setEditForm(getInitialEditForm(doctor));
     setEditImageFile(null);
     setEditImagePreview(
-  resolveApiImageUrl(
-    getImageUrl(doctor)
-  )
-);
+      resolveApiImageUrl(
+        getImageUrl(doctor)
+      )
+    );
     setEditError("");
     setEditFieldErrors(getEmptyEditErrors());
   };
@@ -553,10 +553,10 @@ function Doctors() {
         previousDoctors.map((item) =>
           item.id === doctor.id
             ? {
-                ...item,
-                isActive: nextIsActive,
-                status: nextIsActive ? "Active" : "Inactive",
-              }
+              ...item,
+              isActive: nextIsActive,
+              status: nextIsActive ? "Active" : "Inactive",
+            }
             : item
         )
       );
@@ -909,10 +909,14 @@ function Doctors() {
                   <input
                     id="edit-phone"
                     name="phone"
+                    type="tel"
                     value={editForm.phone}
                     onChange={handleEditFieldChange}
                     inputMode="numeric"
+                    pattern="^(?!([0-9])\1{9})[6-9][0-9]{9}$"
                     maxLength={10}
+                    placeholder="10-digit Indian mobile number"
+                    title="Enter a 10-digit Indian mobile number starting with 6-9 and not all identical digits"
                     className={editFieldErrors.phone ? "is-invalid" : ""}
                     aria-invalid={Boolean(editFieldErrors.phone)}
                   />

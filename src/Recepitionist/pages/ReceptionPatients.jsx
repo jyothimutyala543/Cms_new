@@ -288,9 +288,16 @@ function ReceptionPatients() {
                       field === "age"
                         ? "number"
                         : field === "dateOfBirth"
-                        ? "date"
-                        : "text"
+                          ? "date"
+                          : ["phone", "emergencyContactPhone"].includes(field)
+                            ? "tel"
+                            : "text"
                     }
+                    inputMode={["phone", "emergencyContactPhone"].includes(field) ? "numeric" : undefined}
+                    pattern={["phone", "emergencyContactPhone"].includes(field) ? "^(?!([0-9])\\1{9})[6-9][0-9]{9}$" : undefined}
+                    maxLength={["phone", "emergencyContactPhone"].includes(field) ? 10 : undefined}
+                    placeholder={["phone", "emergencyContactPhone"].includes(field) ? "10-digit Indian mobile number" : ""}
+                    title={["phone", "emergencyContactPhone"].includes(field) ? "Enter a 10-digit Indian mobile number starting with 6-9 and not all identical digits" : ""}
                     value={form[field] || ""}
                     disabled={modal === "view"}
                     className={fieldErrors[field] ? "is-invalid" : ""}

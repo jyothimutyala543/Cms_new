@@ -303,9 +303,9 @@ function Receptionists() {
       const data = await response.json().catch(() => ({}));
       const message =
         data?.message ||
-          (isEditing
-            ? "Receptionist updated successfully"
-            : "Receptionist created successfully");
+        (isEditing
+          ? "Receptionist updated successfully"
+          : "Receptionist created successfully");
       setSuccess(message);
       toast.success(message);
       await fetchReceptionists();
@@ -452,11 +452,10 @@ function Receptionists() {
 
               <span className="receptionists-cell">
                 <span
-                  className={`receptionists-status ${
-                    receptionist.isActive
+                  className={`receptionists-status ${receptionist.isActive
                       ? "receptionists-status-active"
                       : "receptionists-status-inactive"
-                  }`}
+                    }`}
                 >
                   {receptionist.isActive ? "Active" : "Inactive"}
                 </span>
@@ -561,10 +560,14 @@ function Receptionists() {
                 <label htmlFor="receptionist-phone">Phone</label>
                 <input
                   id="receptionist-phone"
+                  type="tel"
                   value={form.phone}
                   onChange={(event) => updateField("phone", event.target.value)}
                   inputMode="numeric"
+                  pattern="^(?!([0-9])\1{9})[6-9][0-9]{9}$"
                   maxLength={10}
+                  placeholder="10-digit Indian mobile number"
+                  title="Enter a 10-digit Indian mobile number starting with 6-9 and not all identical digits"
                   className={fieldErrors.phone ? "is-invalid" : ""}
                   disabled={saving}
                 />

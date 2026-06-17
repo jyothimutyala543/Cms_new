@@ -450,6 +450,9 @@ function AddDoctor() {
 
     if (["experience", "fees"].includes(name)) {
       value = onlyNumberValue(value);
+      if (name === "experience") {
+        value = value.slice(0, 2);
+      }
     }
 
     setForm((previous) => ({
@@ -486,6 +489,7 @@ function AddDoctor() {
       qualification: validateRequired(form.qualification, "Qualification"),
       experience: validateNumeric(form.experience, "Experience", {
         integer: true,
+        max: 99,
       }),
       fees: validateNumeric(form.fees, "Fees"),
       email: validateGmail(form.email),
@@ -615,6 +619,8 @@ function AddDoctor() {
                 name="experience"
                 type="number"
                 min="0"
+                max="99"
+                step="1"
                 value={form.experience}
                 onChange={handleChange}
                 className={fieldErrors.experience ? "is-invalid" : ""}
@@ -687,10 +693,14 @@ function AddDoctor() {
               <label>Phone Number</label>
               <input
                 name="phone"
+                type="tel"
                 value={form.phone}
                 onChange={handleChange}
                 inputMode="numeric"
+                pattern="^(?!([0-9])\1{9})[6-9][0-9]{9}$"
                 maxLength={10}
+                placeholder="10-digit Indian mobile number"
+                title="Enter a 10-digit Indian mobile number starting with 6-9 and not all identical digits"
                 className={fieldErrors.phone ? "is-invalid" : ""}
                 required
               />

@@ -377,12 +377,16 @@ function RegisterDoctor() {
               <input
                 id="mobileNumber"
                 name="mobileNumber"
+                type="tel"
                 value={form.mobileNumber}
                 onChange={(event) =>
                   updateField("mobileNumber", event.target.value)
                 }
                 inputMode="numeric"
+                pattern="^(?!([0-9])\1{9})[6-9][0-9]{9}$"
                 maxLength={10}
+                placeholder="10-digit Indian mobile number"
+                title="Enter a 10-digit Indian mobile number starting with 6-9 and not all identical digits"
                 className={fieldErrors.mobileNumber ? "is-invalid" : ""}
                 disabled={saving}
               />

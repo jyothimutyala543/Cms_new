@@ -89,12 +89,16 @@ export const validateEmailCom = (value, label = "Email") => {
 export const validateMobile = (value, label = "Mobile number") => {
   const required = validateRequired(value, label);
   if (required) return required;
-  return INDIAN_MOBILE_PATTERN.test(String(value).trim())
+
+  const phone = String(value).trim();
+  const repeatedDigits = /^([0-9])\1{9}$/.test(phone);
+
+  return INDIAN_MOBILE_PATTERN.test(phone) && !repeatedDigits
     ? ""
     : `${label} must be a valid Indian mobile number.`;
 };
 
-export const validateNumeric = (value, label, { integer = false } = {}) => {
+export const validateNumeric = (value, label, { integer = false, max = null } = {}) => {
   const required = validateRequired(value, label);
   if (required) return required;
 
@@ -105,6 +109,10 @@ export const validateNumeric = (value, label, { integer = false } = {}) => {
 
   if (integer && !Number.isInteger(numberValue)) {
     return `${label} must be a whole number.`;
+  }
+
+  if (max != null && numberValue > max) {
+    return `${label} must be ${max} or less.`;
   }
 
   return "";

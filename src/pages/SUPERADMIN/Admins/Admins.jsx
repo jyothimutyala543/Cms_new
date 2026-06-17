@@ -464,12 +464,15 @@ function Admins() {
               <input
                 id="admin-phone"
                 name="phone"
+                type="tel"
                 value={form.phone}
                 onChange={handleChange}
                 inputMode="numeric"
+                pattern="^(?!([0-9])\1{9})[6-9][0-9]{9}$"
                 maxLength={10}
+                placeholder="10-digit Indian mobile number"
+                title="Enter a 10-digit Indian mobile number starting with 6-9 and not all identical digits"
                 className={fieldErrors.phone ? "is-invalid" : ""}
-                placeholder="9876543210"
                 required
               />
               {fieldErrors.phone ? (
