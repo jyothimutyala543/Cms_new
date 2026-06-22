@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import "./AddPatientModal.css";
 import { useToast } from "../../components/ToastProvider";
 import {
@@ -13,11 +13,6 @@ import {
   INDIAN_STATES,
 } from "../../utils/indianLocations";
 import {
-  ADMIN_PERMISSION_DENIED_MESSAGE,
-  hasAdminPermission,
-  requireAdminPermission,
-} from "../../utils/adminPermissions";
-import {
   onlyAlpha,
   onlyIndianMobileValue,
   onlyNumberValue,
@@ -30,7 +25,6 @@ import {
 
 function AddPatientModal({ onClose, onAdd }) {
   const toast = useToast();
-  const canCreate = hasAdminPermission("Create");
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -131,11 +125,6 @@ function AddPatientModal({ onClose, onAdd }) {
   const handleSubmit = (event) => {
     event.preventDefault();
 
-    if (!requireAdminPermission("Create", setError)) {
-      toast.error(ADMIN_PERMISSION_DENIED_MESSAGE);
-      return;
-    }
-
     if (!validateForm()) {
       setError("Please fix the highlighted fields.");
       toast.error("Please fix the highlighted fields.");
@@ -155,12 +144,6 @@ function AddPatientModal({ onClose, onAdd }) {
     });
     toast.success("Patient added successfully");
   };
-
-  useEffect(() => {
-    if (!canCreate) onClose?.();
-  }, [canCreate, onClose]);
-
-  if (!canCreate) return null;
 
   const selectedDistricts = getDistrictsForState(form.addressParts?.state);
 

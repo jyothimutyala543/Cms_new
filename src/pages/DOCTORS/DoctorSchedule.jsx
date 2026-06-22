@@ -3,10 +3,6 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import "./DoctorSchedule.css";
 import { apiUrl } from "../../config/api";
-import {
-  hasAdminPermission,
-  requireAdminPermission,
-} from "../../utils/adminPermissions";
 import { formatDateMMDDYYYY } from "../../utils/dateFormat";
 
 const DOCTORS_API = apiUrl("Doctor");
@@ -245,7 +241,6 @@ const buildScheduledDates = (startDate, endDate, workingDays) => {
 
 function Schedule() {
   const navigate = useNavigate();
-  const canEdit = hasAdminPermission("Edit");
   const today = useMemo(() => toDateInputValue(new Date()), []);
   const defaultEndDate = useMemo(
     () => toDateInputValue(addDays(new Date(), 30)),
@@ -363,11 +358,6 @@ function Schedule() {
   };
 
   const handleSave = async () => {
-    if (!requireAdminPermission("Edit", setSaveMessage)) {
-      setHasSaveError(true);
-      return;
-    }
-
     setHasSaveError(true);
 
     if (!doctorId || !startDate || !endDate || days.length === 0) {
@@ -454,8 +444,6 @@ function Schedule() {
     : previewDate;
 
   return (
-    !canEdit ? null :
-
     <div className="schedule-page">
       <h2>Doctor Schedule</h2>
       <p>Create availability from working days and a date range</p>

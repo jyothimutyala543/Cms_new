@@ -3,7 +3,7 @@ import { useNavigate, Link, useLocation } from 'react-router-dom';
 import clinicBg from '../assests/clinic-bg.jpg';
 import './styles/Auth.css';
 import { apiUrl } from '../config/api';
-import { fetchRoles, recordAuditLog } from '../pages/SUPERADMIN/superAdminApi';
+import { recordAuditLog } from '../pages/SUPERADMIN/superAdminApi';
 import { useToast } from '../components/ToastProvider';
 import { validateGmail } from '../utils/validation';
 
@@ -152,43 +152,6 @@ const normalizeRole = (role) =>
 const readJson = async (response) =>
   response.json().catch(() => ({}));
 
-const normalizePermission = (permission = '') => {
-  const value = String(
-    typeof permission === 'string'
-      ? permission
-      : permission?.name || permission?.permission || permission?.claimValue || permission?.value || ''
-  ).trim().toLowerCase();
-
-  if (value === 'view') return 'View';
-  if (value === 'create') return 'Create';
-  if (value === 'edit') return 'Edit';
-  if (value === 'delete') return 'Delete';
-  return '';
-};
-
-const getRolePermissions = async (role) => {
-  const normalizedTargetRole = normalizeRole(role);
-
-  if (normalizedTargetRole === 'superadmin') {
-    return ['View', 'Create', 'Edit', 'Delete'];
-  }
-
-  try {
-    const roles = await fetchRoles();
-    const matchedRole = roles.find((item) => {
-      const roleNames = [item.roleName, item.name, item.raw?.roleName, item.raw?.name];
-      return roleNames.some((value) => normalizeRole(value) === normalizedTargetRole);
-    });
-    const permissions = (matchedRole?.permissions || [])
-      .map(normalizePermission)
-      .filter(Boolean);
-
-    return Array.from(new Set(['View', ...permissions]));
-  } catch {
-    return ['View'];
-  }
-};
-
 const loginRequestBodies = (email, password) => [
   {
     email,
@@ -255,7 +218,6 @@ const clearStoredSession = () => {
     'doctorName',
     'hospitalId',
     'hospitalName',
-    'adminPermissions',
     'superadmin_role_overrides',
   ].forEach((key) => localStorage.removeItem(key));
 };
@@ -413,7 +375,6 @@ const AdminLogin = () => {
       clearStoredSession();
       localStorage.setItem('token', token);
       localStorage.setItem('userRole', role);
-      localStorage.removeItem('adminPermissions');
       localStorage.setItem('hospitalId', String(hospitalId));
       localStorage.setItem('hospitalName', clinicName);
       localStorage.setItem('clinicName', clinicName);
@@ -430,7 +391,6 @@ const AdminLogin = () => {
         localStorage.setItem('adminRole', 'superadmin');
         localStorage.setItem('adminEmail', loginEmail);
         localStorage.setItem('adminName', displayName);
-        localStorage.setItem('adminPermissions', JSON.stringify(['View', 'Create', 'Edit', 'Delete']));
         toast.success('Login successful');
         navigate('/superadmin/dashboard', { replace: true });
         return;
@@ -461,7 +421,6 @@ const AdminLogin = () => {
       localStorage.setItem('adminRole', role);
       localStorage.setItem('adminEmail', loginEmail);
       localStorage.setItem('adminName', displayName);
-      localStorage.setItem('adminPermissions', JSON.stringify(await getRolePermissions(role)));
       toast.success('Login successful');
       navigate('/dashboard', { replace: true });
     } catch {

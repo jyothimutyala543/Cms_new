@@ -1155,19 +1155,30 @@ export const normalizeRole = (role = {}, index = 0) => {
     };
   }
 
+  const formatPermission = (permission = "") => {
+    const value = String(permission || "").trim().toLowerCase();
+
+    if (value === "view") return "View";
+    if (value === "create") return "Create";
+    if (value === "edit") return "Edit";
+    if (value === "delete") return "Delete";
+    return "";
+  };
   const permissions = pick(role, ["permissions", "permissionNames", "claims"], []);
   const normalizedPermissions = Array.isArray(permissions)
     ? permissions.map((permission) =>
-        typeof permission === "string"
-          ? permission
-          : pick(permission, ["name", "permission", "claimValue", "value"])
+        formatPermission(
+          typeof permission === "string"
+            ? permission
+            : pick(permission, ["name", "permission", "claimValue", "value"])
+        )
       )
     : [];
   const booleanPermissions = [
-    pick(role, ["canView"], false) ? "View" : "",
-    pick(role, ["canCreate"], false) ? "Create" : "",
-    pick(role, ["canEdit"], false) ? "Edit" : "",
-    pick(role, ["canDelete"], false) ? "Delete" : "",
+    pick(role, ["canView", "CanView"], false) ? "View" : "",
+    pick(role, ["canCreate", "CanCreate"], false) ? "Create" : "",
+    pick(role, ["canEdit", "CanEdit"], false) ? "Edit" : "",
+    pick(role, ["canDelete", "CanDelete"], false) ? "Delete" : "",
   ].filter(Boolean);
 
   const id = pick(role, ["id", "roleId", "_id"], "");
@@ -1192,10 +1203,10 @@ export const normalizeRole = (role = {}, index = 0) => {
 
 const buildRolePayload = (role = {}) => {
   const permissions = Array.isArray(role.permissions) ? role.permissions : [];
-  const canView = permissions.includes("View") || pick(role, ["canView"], false) === true;
-  const canCreate = permissions.includes("Create") || pick(role, ["canCreate"], false) === true;
-  const canEdit = permissions.includes("Edit") || pick(role, ["canEdit"], false) === true;
-  const canDelete = permissions.includes("Delete") || pick(role, ["canDelete"], false) === true;
+  const canView = permissions.includes("View") || pick(role, ["canView", "CanView"], false) === true;
+  const canCreate = permissions.includes("Create") || pick(role, ["canCreate", "CanCreate"], false) === true;
+  const canEdit = permissions.includes("Edit") || pick(role, ["canEdit", "CanEdit"], false) === true;
+  const canDelete = permissions.includes("Delete") || pick(role, ["canDelete", "CanDelete"], false) === true;
   const roleName = String(pick(role, ["roleName", "name"], "")).trim();
   const module = String(pick(role, ["module"], "")).trim();
 
