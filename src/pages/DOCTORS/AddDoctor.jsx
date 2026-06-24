@@ -347,6 +347,14 @@ const uniqueByValue = (options) => {
   });
 };
 
+const formatFeeValue = (value) => {
+  const text = String(value ?? "").trim();
+  if (!text) return "";
+
+  const numberValue = Number(text);
+  return Number.isNaN(numberValue) ? text : numberValue.toFixed(2);
+};
+
 function AddDoctor() {
   const navigate = useNavigate();
   const toast = useToast();
@@ -491,6 +499,13 @@ function AddDoctor() {
     setError("");
   };
 
+  const handleFeeBlur = () => {
+    setForm((previous) => ({
+      ...previous,
+      fees: formatFeeValue(previous.fees),
+    }));
+  };
+
   const parseErrorMessage = async (response) => {
     const fallback = "Unable to add doctor right now.";
 
@@ -510,18 +525,18 @@ function AddDoctor() {
     }
   };
 
-  const validateForm = () => {
+  const validateForm = (values = form) => {
     const nextErrors = {
-      name: validateAlpha(form.name, "Doctor name"),
-      specialization: validateAlpha(form.specialization, "Specialization"),
-      qualification: validateRequired(form.qualification, "Qualification"),
-      experience: validateNumeric(form.experience, "Experience", {
+      name: validateAlpha(values.name, "Doctor name"),
+      specialization: validateAlpha(values.specialization, "Specialization"),
+      qualification: validateRequired(values.qualification, "Qualification"),
+      experience: validateNumeric(values.experience, "Experience", {
         integer: true,
         max: 99,
       }),
-      fees: validateNumeric(form.fees, "Fees"),
-      email: validateGmail(form.email, 'Email', { strict: false }),
-      phone: validateMobile(form.phone, "Phone"),
+      fees: validateNumeric(values.fees, "Fees"),
+      email: validateGmail(values.email, 'Email', { strict: false }),
+      phone: validateMobile(values.phone, "Phone"),
     };
 
     Object.keys(nextErrors).forEach((key) => {
@@ -534,6 +549,14 @@ function AddDoctor() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    const formattedForm = {
+      ...form,
+      fees: formatFeeValue(form.fees),
+    };
+
+    if (formattedForm.fees !== form.fees) {
+      setForm(formattedForm);
+    }
 
     if (!canCreateDoctor) {
       const message = permissionsLoading
@@ -544,7 +567,7 @@ function AddDoctor() {
       return;
     }
 
-    if (!validateForm()) {
+    if (!validateForm(formattedForm)) {
       setError("Please fix the highlighted fields.");
       toast.error("Please fix the highlighted fields.");
       return;
@@ -558,7 +581,7 @@ function AddDoctor() {
       specialization: form.specialization.trim(),
       experience: String(Number(form.experience) || 0),
       qualification: form.qualification.trim(),
-      consultationFee: Number(form.fees) || 0,
+      consultationFee: Number(formattedForm.fees) || 0,
       email: form.email.trim(),
       phoneNumber: form.phone.trim(),
       isActive: form.isActive === "true",
@@ -707,6 +730,7 @@ function AddDoctor() {
                 inputMode="decimal"
                 value={form.fees}
                 onChange={handleChange}
+                onBlur={handleFeeBlur}
                 className={`add-doctor-fee-input${fieldErrors.fees ? " is-invalid" : ""}`}
                 required
               />

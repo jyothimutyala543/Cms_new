@@ -26,18 +26,6 @@ const CONSULTATION_API = apiUrl("Consultation");
 
 const emptyValue = "-";
 
-const DEFAULT_COMPLAINT_OPTIONS = [
-  "Fever",
-  "Cough",
-  "Headache",
-  "Abdominal pain",
-  "Chest pain",
-  "Back pain",
-  "Nausea",
-  "Vomiting",
-  "Other",
-];
-
 const getInitials = (name) =>
   String(name || "P")
     .split(" ")
@@ -48,6 +36,9 @@ const getInitials = (name) =>
     .toUpperCase() || "P";
 
 const getDisplayDate = (value) => formatDateMMDDYYYY(value, emptyValue);
+
+const pickVital = (item = {}, fallback = {}, key) =>
+  item[key] || item.vitals?.[key] || fallback[key] || fallback.vitals?.[key] || "";
 
 const normalizeAppointment = (item, fallback = {}) => {
   if (!item) return null;
@@ -68,18 +59,12 @@ const normalizeAppointment = (item, fallback = {}) => {
       item.symptoms ||
       fallback.chiefComplaints ||
       "",
-    bloodPressure:
-      item.bloodPressure || fallback.bloodPressure || "",
-    sugarLevel:
-      item.sugarLevel || fallback.sugarLevel || "",
-    temperature:
-      item.temperature || fallback.temperature || "",
-    weight:
-      item.weight || fallback.weight || "",
-    pulseRate:
-      item.pulseRate || fallback.pulseRate || "",
-    respiratoryRate:
-      item.respiratoryRate || fallback.respiratoryRate || "",
+    bloodPressure: pickVital(item, fallback, "bloodPressure"),
+    sugarLevel: pickVital(item, fallback, "sugarLevel"),
+    temperature: pickVital(item, fallback, "temperature"),
+    weight: pickVital(item, fallback, "weight"),
+    pulseRate: pickVital(item, fallback, "pulseRate"),
+    respiratoryRate: pickVital(item, fallback, "respiratoryRate"),
     status: item.status || fallback.status || "Waiting",
   };
 };
@@ -120,7 +105,6 @@ function Consultation() {
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
   const [diagnosisOptions, setDiagnosisOptions] = useState([]);
-  const [complaintOptions, setComplaintOptions] = useState(DEFAULT_COMPLAINT_OPTIONS);
   const [form, setForm] = useState({
     complaintsChoice: "",
     diagnosis: "",
@@ -254,7 +238,7 @@ function Consultation() {
         setOverview(patientOverview);
         setStep(getStepFromStatus(hydratedAppointment.status));
         setForm({
-          complaintsChoice: "",
+          complaintsChoice: appointmentComplaint,
           diagnosis: savedConsultation?.diagnosis || "",
           bp: hydratedAppointment.bloodPressure || "",
           sugar: hydratedAppointment.sugarLevel || "",
@@ -264,14 +248,6 @@ function Consultation() {
           resp: hydratedAppointment.respiratoryRate || "",
           notes: savedConsultation?.clinicalNotes || "",
         });
-        // ensure any existing complaint is present in the dropdown
-        if (appointmentComplaint) {
-          setComplaintOptions((prev) =>
-            prev.some((option) => option === appointmentComplaint)
-              ? prev
-              : mergeDiagnosisOption(prev, appointmentComplaint)
-          );
-        }
       } catch (err) {
         console.error(err);
         setError(err.message || "Unable to load consultation.");
@@ -479,27 +455,13 @@ function Consultation() {
         <section className="cn-form-panel">
           <div className="cn-field">
             <label className="cn-label">Chief Complaints / Symptoms *</label>
-            <select
+            <input
               className="cn-input"
               name="complaintsChoice"
               value={form.complaintsChoice}
-              onChange={(e) => {
-                const value = e.target.value;
-                setForm((prev) => ({
-                  ...prev,
-                  complaintsChoice: value,
-                }));
-              }}
-            >
-              <option value="" disabled>
-                -- Select complaint --
-              </option>
-              {complaintOptions.map((opt) => (
-                <option value={opt} key={opt}>
-                  {opt}
-                </option>
-              ))}
-            </select>
+              readOnly
+              placeholder="No complaint entered by receptionist"
+            />
           </div>
 
           <div className="cn-field">

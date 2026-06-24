@@ -93,6 +93,14 @@ const getImageUrl = (entity = {}) => String(entity.imageUrl || "").trim();
 const getDoctorFee = (doctor = {}) =>
   doctor.consultationFee ?? doctor.fees ?? doctor.Fees ?? "";
 
+const formatFeeValue = (value) => {
+  const text = String(value ?? "").trim();
+  if (!text) return "";
+
+  const numberValue = Number(text);
+  return Number.isNaN(numberValue) ? text : numberValue.toFixed(2);
+};
+
 const getDoctorPhone = (doctor = {}) =>
   doctor.phoneNumber ?? doctor.phone ?? doctor.Phone ?? "";
 
@@ -479,6 +487,13 @@ function Doctors() {
       form: "",
     }));
     setEditError("");
+  };
+
+  const handleEditFeeBlur = () => {
+    setEditForm((previous) => ({
+      ...previous,
+      fees: formatFeeValue(previous.fees),
+    }));
   };
 
   const handleEditImageChange = (event) => {
@@ -936,11 +951,11 @@ function Doctors() {
                   <input
                     id="edit-fees"
                     name="fees"
-                    type="number"
-                    min="0"
-                    step="0.01"
+                    type="text"
+                    inputMode="decimal"
                     value={editForm.fees}
                     onChange={handleEditFieldChange}
+                    onBlur={handleEditFeeBlur}
                     className={`doctor-edit-fee-input${editFieldErrors.fees ? " is-invalid" : ""}`}
                     aria-invalid={Boolean(editFieldErrors.fees)}
                   />
