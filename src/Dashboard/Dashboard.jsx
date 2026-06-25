@@ -36,10 +36,6 @@ import {
   formatCompactIndianCurrency,
   formatIndianCurrency,
 } from "../utils/format";
-import {
-  canUsePermission,
-  fetchAndStoreRolePermissions,
-} from "../utils/authorization";
 import { useToast } from "../components/ToastProvider";
 
 /* ================= API ================= */
